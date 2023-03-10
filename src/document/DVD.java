@@ -2,11 +2,11 @@ package document;
 
 import abonnee.Abonne;
 
-public class DVD implements Document{
+public class DVD implements Document {
     private int numDVD;
     private boolean estAdulte;
 
-    private int numDoc;
+//    private int numDoc;
     private boolean estReserve;
     private boolean estEmprunte;
     private boolean estRetourne;
@@ -14,53 +14,53 @@ public class DVD implements Document{
     private int numAbonee;
     private Abonne abonne;
 
-    public DVD(){
-        this.estReserve=false;
-        this.estEmprunte=false;
-        this.estRetourne=true;
+    public DVD() {
+        this.estReserve = false;
+        this.estEmprunte = false;
+        this.estRetourne = true;
     }
 
     @Override
     public int numero() {
-        return this.numDoc;//j'ai pas sur c quel num
+        return this.numDVD;//j'ai pas sur c quel num
     }
 
     @Override
     public Abonne emprunteur() {
         if (estEmprunte)
             return this.abonne;
-        else return null;
+        return null;
     }
 
     @Override
     public Abonne reserveur() {
         if (estReserve)
             return this.abonne;
-        else return null;
+        return null;
     }
 
     @Override
     public void reservationPour(Abonne ab) {
         if (!estReserve & !estEmprunte) {
-            this.abonne=ab;
+            this.abonne = ab;
             this.estReserve = true;
-            this.estRetourne=false;
+            this.estRetourne = false;
         }
     }
 
     @Override
     public void empruntPar(Abonne ab) {
-        if (this.reserveur()==ab|!estEmprunte) {
-            this.abonne=ab;
+        if (this.reserveur() == ab | !estEmprunte) {
+            this.abonne = ab;
             this.estEmprunte = true;
-            this.estRetourne=false;
+            this.estRetourne = false;
         }
     }
 
     @Override
     public void retour() {
-        this.estReserve=false;
-        this.estEmprunte=false;
-        this.estRetourne=true;
+        this.estReserve = false;
+        this.estEmprunte = false;
+        this.estRetourne = true;
     }
 }
