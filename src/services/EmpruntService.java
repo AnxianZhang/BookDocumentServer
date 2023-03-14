@@ -11,63 +11,57 @@ import java.net.Socket;
 
 public class EmpruntService extends Service {
     private Documents docs;
+
     public EmpruntService(Socket socketServer, Documents d) {
         super(socketServer);
-        this.docs=d;
+        this.docs = d;
     }
 
     @Override
     public void run() {
+        String reponse = null;
+        Socket client = this.getSocketClient();
         try {
             System.out.println("client connecté: " + getSocketClient().getInetAddress());
+            BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+            PrintWriter out = new PrintWriter(client.getOutputStream(), true);
 
-            InputStreamReader isReader = new InputStreamReader(getSocketClient().getInputStream());
-            BufferedReader reader = new BufferedReader(isReader);
-            PrintWriter writer = new PrintWriter(getSocketClient().getOutputStream(), true);
-//			System.out.println(reader.readLine());
-            while (true) {
-                int numDVD=0;
-                int numAbonee=0;
-                String nextLine = reader.readLine();
-                System.out.println("entrez le numDVD que vous voulez emprunter, format: DVD+numDVD");
-                System.out.println("entrez votre numAbonee, format: ABO+numAbonee");
-                if (nextLine != null&& nextLine.contains("DVD")) {
-                    synchronized (this) {
-                    numDVD=Integer.parseInt(nextLine.substring(4));}
-                    System.out.println("numDVD:"+numDVD+"est enregistree");
-                }
-                if (nextLine != null&& nextLine.contains("ABO")) {
-                    synchronized (this) {
-                    numAbonee=Integer.parseInt(nextLine.substring(4));}
-                    System.out.println("numAbonee:"+numAbonee+"est enregistree"+"\n"+"waiting..");
-                }
-                if (numDVD != 0&& numAbonee != 0) {
-                    if(!docs.getDocuments(numDVD).estReserve||(docs.getDocuments(numDVD).estReserve&&docs.getDocuments(numDVD).reserveur()==docs.getAbonne(numAbonee))){
-                        if(!docs.getDocuments(numDVD).estEmprunte){
-                            synchronized(docs){
-                                docs.getDocuments(numDVD).empruntPar(docs.getAbonne(numAbonee));
-                            }
-                            System.out.println("ok, c fait, emprunter reussi");
-                        }
-                        else{System.out.println("ce DVD: "+numDVD+"est déjà emprunté");}
+            out.println("Tapez le numero DVD que vous voulez emprunter:");
+            int numDVD = Integer.parseInt(in.readLine());
+            out.println("Tapez votre numero Abonee:");
+            int numAbonee = Integer.parseInt(in.readLine());
+
+            System.out.println("Requète de " + client.getInetAddress()
+                    + "numero DVD" + numDVD + " pour numero Abonee "
+                    + numAbonee);
+
+//            Cours cours = getCours(noCours);
+            if (!docs.getDocuments(numDVD).estReserve
+                    || (docs.getDocuments(numDVD).estReserve
+                    && docs.getDocuments(numDVD).reserveur() == docs.getAbonne(numAbonee))) {
+                if (!docs.getDocuments(numDVD).estEmprunte) {
+                    synchronized (docs.getDocuments(numDVD)) {
+                        docs.getDocuments(numDVD).empruntPar(docs.getAbonne(numAbonee));
+                        reponse = "l'emprunte réussie";
                     }
-                    else{System.out.println("ce DVD: "+numDVD+"est déjà reservé");}
+                } else {
+                    reponse = "ce DVD est déjà emprunté";
                 }
-
-//                if (nextLine != null) {
-//                    StringBuffer line = new StringBuffer(nextLine);
-//                    System.out.println(line);
-////                    writer.println(line.reverse());
-//                }
-                else {
-                    System.out.println("getSocketClient() déconnecté: " + getSocketClient().getInetAddress());
-                    break;
-                }
-                //				writer.println(line);
+            } else {
+                reponse = "ce DVD est déjà reservé";
             }
+            System.out.println(reponse);
+            out.println(reponse);
 
         } catch (IOException e) {
             System.out.println("pb service");
         }
+        try {
+            client.close();
+            System.out.println("getSocketClient() déconnecté: " + getSocketClient().getInetAddress());
+        } catch (IOException e2) {
+            System.out.println("pb service");
+        }
     }
+
 }
