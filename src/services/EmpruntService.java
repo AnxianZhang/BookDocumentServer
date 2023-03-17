@@ -1,5 +1,8 @@
 package services;
 
+import document.*;
+import abonnee.*;
+
 import dataBase.Documents;
 import server.Service;
 
@@ -35,21 +38,26 @@ public class EmpruntService extends Service {
                     + "numero DVD" + numDVD + " pour numero Abonee "
                     + numAbonee);
 
-//            Cours cours = getCours(noCours);
-            if (!docs.getDocuments(numDVD).estReserve
-                    || (docs.getDocuments(numDVD).estReserve
-                    && docs.getDocuments(numDVD).reserveur() == docs.getAbonne(numAbonee))) {
-                if (!docs.getDocuments(numDVD).estEmprunte) {
-                    synchronized (docs.getDocuments(numDVD)) {
-                        docs.getDocuments(numDVD).empruntPar(docs.getAbonne(numAbonee));
-                        reponse = "l'emprunte réussie";
+            Document doc = docs.getDocuments(numDVD);
+            Abonne abo= docs.getAbonne(numAbonee);
+
+            if (doc != null){
+                if (doc.reserveur()==null|| doc.reserveur() == abo){
+                    if (doc.emprunteur()==null) {
+                        //pas defini « vous n’avez pas l’âge pour emprunter ce DVD »
+                        synchronized (doc) {
+                            doc.empruntPar(abo);
+                            reponse = "l'emprunte réussie";
+                        }
+                    } else {
+                        reponse = "ce DVD est déjà emprunté";
                     }
                 } else {
-                    reponse = "ce DVD est déjà emprunté";
+                    reponse = "ce DVD est déjà reservé";
                 }
-            } else {
-                reponse = "ce DVD est déjà reservé";
             }
+            else
+                reponse ="Aucun document ne porte ce numéro";
             System.out.println(reponse);
             out.println(reponse);
 
