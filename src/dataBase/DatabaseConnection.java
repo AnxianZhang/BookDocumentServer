@@ -8,6 +8,10 @@ public class DatabaseConnection {
     private static Connection connexion;
 
     static {
+        connexion = null;
+    }
+
+    public static void makeConnexion(){
         try {
             Class.forName("oracle.jdbc.OracleDriver");
             String url = "jdbc:oracle:thin:@localhost:1521:XE";

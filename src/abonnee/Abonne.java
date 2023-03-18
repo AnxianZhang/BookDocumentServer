@@ -6,17 +6,21 @@ import java.util.List;
 
 public class Abonne {
     private int numAbonee;
-    private String dateNaissance; //car format aaaa-mm-jj
+    private int anneeNaissance;
     private String nom;
-    private List<Document> listReserve;
-    private List<Document> listEmprunte;
+
+    public Abonne(int numAbonee, int anneeNaissance, String nom){
+        this.numAbonee = numAbonee;
+        this.anneeNaissance = anneeNaissance;
+        this.nom = nom;
+    }
 
     public int getNumAbonee() {
         return numAbonee;
     }
 
-    public String getDateNaissance() {
-        return dateNaissance;
+    public int getDateNaissance() {
+        return this.anneeNaissance;
     }
 
     public String getNom() {

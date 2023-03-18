@@ -3,45 +3,43 @@ package document;
 import abonnee.Abonne;
 
 public class DVD implements Document {
-    private int numDVD;
+    private int numDoc;
     private boolean estAdulte;
 
-//    private int numDoc;
     private boolean estReserve;
     private boolean estEmprunte;
     private boolean estRetourne;
     private String titre;
-    private int numAbonee;
     private Abonne abonne;
 
-    public DVD() {
+    public DVD(int numDoc, boolean estEmprunte, boolean estRetourne, String titre, boolean estAdulte, Abonne abonne) {
+        this.numDoc = numDoc;
+        this.estAdulte = estAdulte;
+        this.estEmprunte = estEmprunte;
+        this.estRetourne = estRetourne;
         this.estReserve = false;
-        this.estEmprunte = false;
-        this.estRetourne = true;
+        this.titre  = titre;
+        this.abonne = abonne;
     }
 
     @Override
     public int numero() {
-        return this.numDVD;//j'ai pas sur c quel num
+        return this.numDoc;
     }
 
     @Override
     public Abonne emprunteur() {
-        if (estEmprunte)
-            return this.abonne;
-        return null;
+        return this.estEmprunte || this.estReserve ? this.abonne:  null;
     }
 
     @Override
     public Abonne reserveur() {
-        if (estReserve)
-            return this.abonne;
-        return null;
+        return estReserve ? this.abonne : null;
     }
 
     @Override
     public void reservationPour(Abonne ab) {
-        if (!estReserve & !estEmprunte) {
+        if (!estReserve && !estEmprunte) {
             this.abonne = ab;
             this.estReserve = true;
             this.estRetourne = false;
