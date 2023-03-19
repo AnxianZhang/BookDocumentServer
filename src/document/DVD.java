@@ -18,7 +18,7 @@ public class DVD implements Document {
         this.estEmprunte = estEmprunte;
         this.estRetourne = estRetourne;
         this.estReserve = false;
-        this.titre  = titre;
+        this.titre = titre;
         this.abonne = abonne;
     }
 
@@ -29,7 +29,7 @@ public class DVD implements Document {
 
     @Override
     public Abonne emprunteur() {
-        return this.estEmprunte || this.estReserve ? this.abonne:  null;
+        return this.estEmprunte || this.estReserve ? this.abonne : null;
     }
 
     @Override
@@ -38,21 +38,30 @@ public class DVD implements Document {
     }
 
     @Override
-    public void reservationPour(Abonne ab) {
+    public void reservationPour(Abonne ab) throws RestrictionException {
         if (!estReserve && !estEmprunte) {
             this.abonne = ab;
             this.estReserve = true;
             this.estRetourne = false;
+            return;
         }
+        throw new RestrictionException("Le DVD "+ this.titre +" est deja " + (estReserve ? "reserver" : "emprunter"));
     }
 
     @Override
-    public void empruntPar(Abonne ab) {
-        if (this.reserveur() == ab | !estEmprunte) {
+    public void empruntPar(Abonne ab) throws RestrictionException {
+        System.out.println(estEmprunte);
+        if (this.reserveur() == ab || !estEmprunte) {
+            if (this.estAdulte && !ab.estAdulte()) {
+                throw new RestrictionException("Vous n'avaz pas l'age requis pour "+ this.titre);
+            }
             this.abonne = ab;
             this.estEmprunte = true;
             this.estRetourne = false;
+            this.estReserve = false;
+            return;
         }
+        throw new RestrictionException("Le DVD "+ this.titre +" est deja " + (estReserve ? "reserver" : "emprunter"));
     }
 
     @Override
@@ -60,5 +69,6 @@ public class DVD implements Document {
         this.estReserve = false;
         this.estEmprunte = false;
         this.estRetourne = true;
+        this.abonne = null;
     }
 }

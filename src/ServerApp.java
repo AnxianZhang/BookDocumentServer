@@ -1,7 +1,10 @@
 import dataBase.Data;
 import dataBase.DatabaseConnection;
 import server.Server;
+import services.EmpruntService;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -14,11 +17,13 @@ public class ServerApp {
         PORT_RETOUR = 5000;
     }
 
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) throws SQLException, IOException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         Data data = new Data();
 
+
 //        new Thread(new Server(ReservationService.class, PORT_RESERVATION)).start();
-//        new Thread(new Server(EmpruntService.class, PORT_EMPRUNT)).start();
+        EmpruntService.setData(data);
+        new Thread(new Server(EmpruntService.class, PORT_EMPRUNT)).start();
 //        new Thread(new Server(RetourService.class, PORT_RETOUR)).start();
     }
 }

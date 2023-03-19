@@ -1,6 +1,7 @@
 package dataBase;
 
 import abonnee.Abonne;
+import document.ConcurrentDocument;
 import document.DVD;
 import document.Document;
 
@@ -61,8 +62,19 @@ public class Data {
             boolean estAdulte = parseToBool(documentsData.getString("estAdulte"));
             String titre = documentsData.getString("titre");
             Integer numAbonee = documentsData.getInt("numAbonee");
-
-            this.documents.add(new DVD(numDoc, estEmprunte, estRetourne, titre, estAdulte,getAbonee(numAbonee)));
+            System.out.println(titre + " " + estEmprunte);
+            this.documents.add(
+                    new ConcurrentDocument(
+                            new DVD(
+                                    numDoc,
+                                    estEmprunte,
+                                    estRetourne,
+                                    titre,
+                                    estAdulte,
+                                    getAbonee(numAbonee)
+                            )
+                    )
+            );
         }
     }
 
@@ -72,7 +84,7 @@ public class Data {
     }
 
     public Abonne getAbonee(Integer numAbonee){
-        if (numAbonee != null){
+        if (numAbonee != null && numAbonee > 0 && numAbonee <= this.abonees.size()){
             for (Abonne abonee : this.abonees) {
                 if (abonee.getNumAbonee() == numAbonee) {
                     return abonee;
@@ -83,6 +95,6 @@ public class Data {
     }
 
     public Document getDocument (int numDoc){
-        return (numDoc > 0 && numDoc < this.documents.size()) ? this.documents.get(numDoc - 1) : null;
+        return (numDoc > 0 && numDoc <= this.documents.size()) ? this.documents.get(numDoc - 1) : null;
     }
 }

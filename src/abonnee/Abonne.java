@@ -2,6 +2,7 @@ package abonnee;
 
 import document.Document;
 
+import java.time.Year;
 import java.util.List;
 
 public class Abonne {
@@ -19,8 +20,8 @@ public class Abonne {
         return numAbonee;
     }
 
-    public int getDateNaissance() {
-        return this.anneeNaissance;
+    public boolean estAdulte() {
+        return Year.now().getValue() - this.anneeNaissance >= 18 ;
     }
 
     public String getNom() {
