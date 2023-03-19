@@ -3,6 +3,7 @@ import dataBase.DatabaseConnection;
 import server.Server;
 import services.EmpruntService;
 import services.ReservationService;
+import services.RetourService;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -26,6 +27,7 @@ public class ServerApp {
         new Thread(new Server(ReservationService.class, PORT_RESERVATION)).start();
         EmpruntService.setData(data);
         new Thread(new Server(EmpruntService.class, PORT_EMPRUNT)).start();
-//        new Thread(new Server(RetourService.class, PORT_RETOUR)).start();
+        RetourService.setData(data);
+        new Thread(new Server(RetourService.class, PORT_RETOUR)).start();
     }
 }
