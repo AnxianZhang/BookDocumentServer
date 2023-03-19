@@ -66,12 +66,13 @@ public class EmpruntService extends Service {
                             + currentAbonne.getNumAbonee()
             );
 
-            if (chosenDocument.reserveur() == null || chosenDocument.reserveur() == currentAbonne) {
-                chosenDocument.empruntPar(currentAbonne);
-                reponse = "Emprunt du DVD confirme";
-                System.out.println(reponse);
-                out.println(reponse);
-            }
+//            if (chosenDocument.reserveur() == null || chosenDocument.reserveur() == currentAbonne) {
+
+            chosenDocument.empruntPar(currentAbonne);
+            reponse = "Emprunt du DVD confirme";
+            System.out.println(reponse);
+            out.println(reponse);
+//            }
             /*
             }
 

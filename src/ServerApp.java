@@ -2,6 +2,7 @@ import dataBase.Data;
 import dataBase.DatabaseConnection;
 import server.Server;
 import services.EmpruntService;
+import services.ReservationService;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -21,7 +22,8 @@ public class ServerApp {
         Data data = new Data();
 
 
-//        new Thread(new Server(ReservationService.class, PORT_RESERVATION)).start();
+        ReservationService.setData(data);
+        new Thread(new Server(ReservationService.class, PORT_RESERVATION)).start();
         EmpruntService.setData(data);
         new Thread(new Server(EmpruntService.class, PORT_EMPRUNT)).start();
 //        new Thread(new Server(RetourService.class, PORT_RETOUR)).start();
