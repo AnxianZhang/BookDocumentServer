@@ -12,7 +12,8 @@ public class ServerApp {
     private static final int PORT_EMPRUNT;
     private static final int PORT_RETOUR;
     private static final int PORT_RESERVATION;
-    static{
+
+    static {
         PORT_RESERVATION = 3000;
         PORT_EMPRUNT = 4000;
         PORT_RETOUR = 5000;

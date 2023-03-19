@@ -30,21 +30,21 @@ public class ConcurrentDocument implements Document {
 
     @Override
     public void reservationPour(Abonne ab) throws RestrictionException {
-        synchronized (this.d){
+        synchronized (this.d) {
             this.d.reservationPour(ab);
         }
     }
 
     @Override
     public void empruntPar(Abonne ab) throws RestrictionException {
-        synchronized (this.d){
+        synchronized (this.d) {
             this.d.empruntPar(ab);
         }
     }
 
     @Override
     public void retour() {
-        synchronized (this.d){
+        synchronized (this.d) {
             this.d.retour();
         }
     }

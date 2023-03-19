@@ -11,34 +11,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class ReservationService extends Service {
     private static Data data;
 
-//    private Timer timer;
-//    private static final long VALID_TIME = 1000L * 60 * 60 * 2;//2h->ms
-
-//    private class ReservationInvalide extends TimerTask {
-//        private Document dvd;
-//        private PrintWriter out;
-//
-//        public ReservationInvalide(Document d, PrintWriter out) {
-//            this.dvd = d;
-//            this.out = out;
-//        }
-//
-//        @Override
-//        public void run() {
-//            this.dvd.retour();
-//            out.println("Time elapsed, reservation of "  + dvd.numero() +  " cancelled.");
-//        }
-//    }
-
     public ReservationService(Socket socketServer) {
         super(socketServer);
-//        this.timer = new Timer();
     }
 
     public static void setData(Data d) {
@@ -68,24 +46,26 @@ public class ReservationService extends Service {
                 int numDVD = Integer.parseInt(in.readLine());
                 chosenDocument = data.getDocument(numDVD);
             }
+            out.println("ok");
 
             while (currentAbonne == null) {
                 out.println("Please enter your customer number: ");
                 int numAbonee = Integer.parseInt(in.readLine());
                 currentAbonne = data.getAbonee(numAbonee);
             }
+            out.println("ok");
 
             System.out.println(
                     "Request of " + client.getInetAddress()
                             + "for DVD (num: " + chosenDocument.numero() + ") booked by "
-                            + currentAbonne.getNom() + " ("+ currentAbonne.getNumAbonee() + ")"
+                            + currentAbonne.getNom() + " (" + currentAbonne.getNumAbonee() + ")"
             );
 
             chosenDocument.reservationPour(currentAbonne);
-            reponse = "Reservation of the DVD confirmed, you have 2 hours to come and pick it up.\n" +
+            reponse = "Reservation of the DVD confirmed, you have 2 hours to come and pick it up. \n" +
                     "Otherwise, we will be forced to cancel it.";
-            System.out.println("Booking DVD (num: "+ chosenDocument.numero() + ") confirmed");
             out.println(reponse.replace("\n", "##"));
+            System.out.println("Booking DVD (num: " + chosenDocument.numero() + ") confirmed");
 
         } catch (IOException e) {
             System.out.println("pb service");
@@ -95,6 +75,7 @@ public class ReservationService extends Service {
             try {
                 client.close();
                 System.out.println("========== Client disconnection " + super.getSocketClient().getInetAddress() + " deconnectee ==========");
+                System.out.println();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

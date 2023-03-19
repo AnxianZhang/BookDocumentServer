@@ -58,11 +58,11 @@ public class EmpruntService extends Service {
             System.out.println(
                     "Request of " + client.getInetAddress()
                             + "for DVD (num: " + chosenDocument.numero() + ") borrowed by "
-                            + currentAbonne.getNom() + " ("+ currentAbonne.getNumAbonee() + ")"
+                            + currentAbonne.getNom() + " (" + currentAbonne.getNumAbonee() + ")"
             );
 
             chosenDocument.empruntPar(currentAbonne);
-            reponse = "Borrowing DVD (num: "+ chosenDocument.numero() + ") confirms";
+            reponse = "Borrowing DVD (num: " + chosenDocument.numero() + ") confirms";
             System.out.println(reponse);
             out.println(reponse);
 
@@ -75,6 +75,7 @@ public class EmpruntService extends Service {
             try {
                 client.close();
                 System.out.println("========== Client disconnection " + super.getSocketClient().getInetAddress() + " deconnectee ==========");
+                System.out.println();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

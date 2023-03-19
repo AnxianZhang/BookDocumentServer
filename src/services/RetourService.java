@@ -1,6 +1,5 @@
 package services;
 
-import abonnee.Abonne;
 import dataBase.Data;
 import document.Document;
 import server.Service;
@@ -47,8 +46,9 @@ public class RetourService extends Service {
             out.println("ok");
             out.println("ok");
 
-            System.out.println("Requète de " + client.getInetAddress()
-                    + "numero DVD" + chosenDocument.numero());
+            System.out.println("Request of " + client.getInetAddress()
+                    + "for DVD (num: " + chosenDocument.numero() + ")"
+            );
 
             chosenDocument.retour();
             reponse = "Return of the DVD (" + chosenDocument.numero() + ") successful";
@@ -61,6 +61,7 @@ public class RetourService extends Service {
             try {
                 client.close();
                 System.out.println("========== Client disconnection " + super.getSocketClient().getInetAddress() + " deconnectee ==========");
+                System.out.println();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

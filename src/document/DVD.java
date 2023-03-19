@@ -3,6 +3,7 @@ package document;
 import abonnee.Abonne;
 
 import java.io.PrintWriter;
+import java.nio.ReadOnlyBufferException;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -17,22 +18,26 @@ public class DVD implements Document {
     private Abonne abonne;
     private Timer timer;
 
-//    private static final long VALID_TIME = 1000L * 60 * 60 * 2;//2h->ms
+    //    private static final long VALID_TIME = 1000L * 60 * 60 * 2;//2h->ms
     private static final long VALID_TIME = 15000L;//2h->ms
-
 
 
     private class ReservationInvalide extends TimerTask {
         private Document dvd;
+        private Abonne abonne;
 
-        public ReservationInvalide(Document d) {
+        public ReservationInvalide(Document d, Abonne a) {
             this.dvd = d;
+            this.abonne = a;
         }
 
         @Override
         public void run() {
             this.dvd.retour();
-            System.out.println("Time elapsed, reservation of "  + dvd.numero() +  " cancelled.");
+            System.out.println(
+                    "Time elapsed, reservation of " + dvd.numero() +
+                            " by " + this.abonne.getNom() + " cancelled."
+            );
         }
     }
 
@@ -70,29 +75,28 @@ public class DVD implements Document {
             this.estReserve = true;
             this.estRetourne = true;
 
-            this.timer.schedule(new ReservationInvalide(this), VALID_TIME);
+            this.timer.schedule(new ReservationInvalide(this, ab), VALID_TIME);
             return;
         }
         throw new RestrictionException(
-                "Le DVD " + this.titre + " est deja "
-                        + (this.estReserve ? "reserver" : "emprunter")
-                        + " impossible de reserver"
+                "The DVD " + this.titre + " is already "
+                        + (this.estReserve ? "reserved" : "borrowed")
+                        + ", impossible to reserve"
         );
     }
 
     @Override
     public void empruntPar(Abonne ab) throws RestrictionException {
-        System.out.println(this.estEmprunte);
         if (!this.estEmprunte) {
             if (this.estAdulte && !ab.estAdulte()) {
-                throw new RestrictionException("Vous n'avaz pas l'age requis pour "+ this.titre);
+                throw new RestrictionException("You are not old enough to borrow the DVD: " + this.titre);
             }
 
             if (this.estReserve) {
                 if (this.reserveur() == ab) {
                     this.timer.cancel();
                 } else {
-                    throw new RestrictionException("Le DVD " + this.titre + " est deja reserver impossible d'emprunter");
+                    throw new RestrictionException("The DVD " + this.titre + " is already booked, impossible to borrow");
                 }
             }
 
@@ -102,7 +106,7 @@ public class DVD implements Document {
             this.estReserve = false;
             return;
         }
-        throw new RestrictionException("Le DVD "+ this.titre +" est deja emprunter impossible d'emprunter");
+        throw new RestrictionException("The DVD " + this.titre + " is already borrowed, impossible to borrow");
     }
 
     @Override
