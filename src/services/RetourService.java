@@ -56,7 +56,7 @@ public class RetourService extends Service {
                 if (!customerResponse.equals("quit")) {
                     out.println("ok");
                     System.out.println("Request of " + client.getInetAddress()
-                            + "for DVD (num: " + chosenDocument.numero() + ")"
+                            + " for DVD (num: " + chosenDocument.numero() + ")"
                     );
 
                     chosenDocument.retour();

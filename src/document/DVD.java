@@ -2,8 +2,6 @@ package document;
 
 import abonnee.Abonne;
 
-import java.io.PrintWriter;
-import java.nio.ReadOnlyBufferException;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -71,6 +69,9 @@ public class DVD implements Document {
     @Override
     public void reservationPour(Abonne ab) throws RestrictionException {
         if (!this.estReserve && !this.estEmprunte) {
+            if (this.estAdulte && !ab.estAdulte()) {
+                throw new RestrictionException("You are not old enough to borrow the DVD: " + this.titre + "##");
+            }
             this.abonne = ab;
             this.estReserve = true;
             this.estRetourne = true;

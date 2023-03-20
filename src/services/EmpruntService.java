@@ -66,7 +66,7 @@ public class EmpruntService extends Service {
                         out.println("ok");
                         System.out.println(
                                 "Request of " + client.getInetAddress()
-                                        + "for DVD (num: " + chosenDocument.numero() + ") borrowed by "
+                                        + " for DVD (num: " + chosenDocument.numero() + ") borrowed by "
                                         + currentAbonne.getNom() + " (" + currentAbonne.getNumAbonee() + ")"
                         );
 
@@ -77,7 +77,10 @@ public class EmpruntService extends Service {
                             System.out.println("Borrowing DVD (num: " + chosenDocument.numero() + ") confirmed");
                             out.println(reponse);
                         } catch (RestrictionException e) {
-                            System.out.println(e + "##");
+                            System.out.println(e.toString()
+                                    .replace("##", "\n")
+                                    .replace("You", currentAbonne.getNom())
+                            );
                             out.println(e);
                         }
 
