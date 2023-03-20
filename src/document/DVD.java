@@ -81,7 +81,7 @@ public class DVD implements Document {
         throw new RestrictionException(
                 "The DVD " + this.titre + " is already "
                         + (this.estReserve ? "reserved" : "borrowed")
-                        + ", impossible to reserve"
+                        + ", impossible to reserve. ##"
         );
     }
 
@@ -89,14 +89,14 @@ public class DVD implements Document {
     public void empruntPar(Abonne ab) throws RestrictionException {
         if (!this.estEmprunte) {
             if (this.estAdulte && !ab.estAdulte()) {
-                throw new RestrictionException("You are not old enough to borrow the DVD: " + this.titre);
+                throw new RestrictionException("You are not old enough to borrow the DVD: " + this.titre + "##");
             }
 
             if (this.estReserve) {
                 if (this.reserveur() == ab) {
                     this.timer.cancel();
                 } else {
-                    throw new RestrictionException("The DVD " + this.titre + " is already booked, impossible to borrow");
+                    throw new RestrictionException("The DVD " + this.titre + " is already booked, impossible to borrow. ##");
                 }
             }
 
@@ -106,7 +106,7 @@ public class DVD implements Document {
             this.estReserve = false;
             return;
         }
-        throw new RestrictionException("The DVD " + this.titre + " is already borrowed, impossible to borrow");
+        throw new RestrictionException("The DVD " + this.titre + " is already borrowed, impossible to borrow. ##");
     }
 
     @Override

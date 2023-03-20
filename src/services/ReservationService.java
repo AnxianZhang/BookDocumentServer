@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Objects;
 
 public class ReservationService extends Service {
     private static Data data;
@@ -40,37 +41,89 @@ public class ReservationService extends Service {
             out = new PrintWriter(client.getOutputStream(), true);
 
             out.println("++++++++++ Welcome to the booking service ++++++++++");
-
-            while (chosenDocument == null) {
-                out.println("Please enter a (valid) number of DVD that you wish to borrow: ");
-                int numDVD = Integer.parseInt(in.readLine());
-                chosenDocument = data.getDocument(numDVD);
-            }
-            out.println("ok");
+            String customerResponse = "";
 
             while (currentAbonne == null) {
-                out.println("Please enter your customer number: ");
-                int numAbonee = Integer.parseInt(in.readLine());
+                out.println("Please enter your customer number (a valid one): ||");
+
+                customerResponse = in.readLine();
+                if (Objects.equals(customerResponse, "quit")) {
+                    break;
+                }
+                int numAbonee = Integer.parseInt(customerResponse);
                 currentAbonne = data.getAbonee(numAbonee);
             }
-            out.println("ok");
+            while (true) {
+                if (!customerResponse.equals("quit")) {
+                    while (chosenDocument == null) {
+                        out.println("Please enter a (valid) number of DVD that you wish to book: ");
 
-            System.out.println(
-                    "Request of " + client.getInetAddress()
-                            + "for DVD (num: " + chosenDocument.numero() + ") booked by "
-                            + currentAbonne.getNom() + " (" + currentAbonne.getNumAbonee() + ")"
-            );
+                        customerResponse = in.readLine();
+                        if (Objects.equals(customerResponse, "quit")) {
+//                    System.out.println(customerResponse);
+                            break;
+                        }
+                        int numDVD = Integer.parseInt(customerResponse);
+                        chosenDocument = data.getDocument(numDVD);
+                    }
+                    if (!customerResponse.equals("quit")) {
+                        out.println("ok");
+                        System.out.println(
+                                "Request of " + client.getInetAddress()
+                                        + "for DVD (num: " + chosenDocument.numero() + ") booked by "
+                                        + currentAbonne.getNom() + " (" + currentAbonne.getNumAbonee() + ")"
+                        );
 
-            chosenDocument.reservationPour(currentAbonne);
-            reponse = "Reservation of the DVD confirmed, you have 2 hours to come and pick it up. \n" +
-                    "Otherwise, we will be forced to cancel it.";
-            out.println(reponse.replace("\n", "##"));
-            System.out.println("Booking DVD (num: " + chosenDocument.numero() + ") confirmed");
+                        try {
+                            chosenDocument.reservationPour(currentAbonne);
+                            reponse = "Reservation of the DVD confirmed, you have 2 hours to come and pick it up. ##" +
+                                    "Otherwise, we will be forced to cancel it.##You can leave by entering 'quit'.##" ;
+                            out.println(reponse);
+                            System.out.println("Booking DVD (num: " + chosenDocument.numero() + ") confirmed");
+                        } catch (RestrictionException e) {
+                            System.out.println(e + "##");
+                            out.println(e);
+                        }
+
+                        // init for next request
+                        customerResponse = "";
+                        chosenDocument = null;
+//                        currentAbonne = null;
+                    }
+                } else {
+                    break;
+                }
+            }
+//            out.println("++++++++++ Welcome to the booking service ++++++++++");
+//
+//            while (chosenDocument == null) {
+//                out.println("Please enter a (valid) number of DVD that you wish to borrow: ");
+//                int numDVD = Integer.parseInt(in.readLine());
+//                chosenDocument = data.getDocument(numDVD);
+//            }
+//            out.println("ok");
+//
+//            while (currentAbonne == null) {
+//                out.println("Please enter your customer number: ");
+//                int numAbonee = Integer.parseInt(in.readLine());
+//                currentAbonne = data.getAbonee(numAbonee);
+//            }
+//            out.println("ok");
+//
+//            System.out.println(
+//                    "Request of " + client.getInetAddress()
+//                            + "for DVD (num: " + chosenDocument.numero() + ") booked by "
+//                            + currentAbonne.getNom() + " (" + currentAbonne.getNumAbonee() + ")"
+//            );
+//
+//            chosenDocument.reservationPour(currentAbonne);
+//            reponse = "Reservation of the DVD confirmed, you have 2 hours to come and pick it up. \n" +
+//                    "Otherwise, we will be forced to cancel it.";
+//            out.println(reponse.replace("\n", "##"));
+//            System.out.println("Booking DVD (num: " + chosenDocument.numero() + ") confirmed");
 
         } catch (IOException e) {
             System.out.println("pb service");
-        } catch (RestrictionException e) {
-            out.println(e);
         } finally {
             try {
                 client.close();

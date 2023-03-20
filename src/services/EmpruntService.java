@@ -6,11 +6,9 @@ import abonnee.*;
 
 import server.Service;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
+import java.util.Objects;
 
 public class EmpruntService extends Service {
     private static Data data;
@@ -40,44 +38,67 @@ public class EmpruntService extends Service {
             out = new PrintWriter(client.getOutputStream(), true);
 
             out.println("++++++++++ Welcome to the borrowing service ++++++++++");
-
-            while (chosenDocument == null) {
-                out.println("Please enter a (valid) number of DVD that you wish to borrow: ");
-                int numDVD = Integer.parseInt(in.readLine());
-                chosenDocument = data.getDocument(numDVD);
-            }
-            out.println("ok");
-
+            String customerResponse = "";
             while (currentAbonne == null) {
-                out.println("Please enter your customer number: ");
-                int numAbonee = Integer.parseInt(in.readLine());
+                out.println("Please enter your customer number (a valid one): ||");
+
+                customerResponse = in.readLine();
+                if (Objects.equals(customerResponse, "quit")) {
+                    break;
+                }
+                int numAbonee = Integer.parseInt(customerResponse);
                 currentAbonne = data.getAbonee(numAbonee);
             }
-            out.println("ok");
+            while (true) {
+                if (!customerResponse.equals("quit")) {
+                    while (chosenDocument == null) {
+                        out.println("Please enter a (valid) number of DVD that you wish to borrow: ");
 
-            System.out.println(
-                    "Request of " + client.getInetAddress()
-                            + "for DVD (num: " + chosenDocument.numero() + ") borrowed by "
-                            + currentAbonne.getNom() + " (" + currentAbonne.getNumAbonee() + ")"
-            );
+                        customerResponse = in.readLine();
+                        if (Objects.equals(customerResponse, "quit")) {
+//                    System.out.println(customerResponse);
+                            break;
+                        }
+                        int numDVD = Integer.parseInt(customerResponse);
+                        chosenDocument = data.getDocument(numDVD);
+                    }
+                    if (!customerResponse.equals("quit")) {
+                        out.println("ok");
+                        System.out.println(
+                                "Request of " + client.getInetAddress()
+                                        + "for DVD (num: " + chosenDocument.numero() + ") borrowed by "
+                                        + currentAbonne.getNom() + " (" + currentAbonne.getNumAbonee() + ")"
+                        );
 
-            chosenDocument.empruntPar(currentAbonne);
-            reponse = "Borrowing DVD (num: " + chosenDocument.numero() + ") confirms";
-            System.out.println(reponse);
-            out.println(reponse);
+                        try {
+                            chosenDocument.empruntPar(currentAbonne);
+                            reponse = "Borrowing DVD (num: " + chosenDocument.numero() + ") confirms.##" +
+                                    "You can leave by entering 'quit'.##";
+                            System.out.println("Borrowing DVD (num: " + chosenDocument.numero() + ") confirmed");
+                            out.println(reponse);
+                        } catch (RestrictionException e) {
+                            System.out.println(e + "##");
+                            out.println(e);
+                        }
 
+                        // init for next request
+                        customerResponse = "";
+                        chosenDocument = null;
+//                        currentAbonne = null;
+                    }
+                } else {
+                    break;
+                }
+            }
         } catch (IOException e) {
             System.out.println("pb service");
-        } catch (RestrictionException e) {
-            System.out.println(e);
-            out.println(e);
         } finally {
             try {
                 client.close();
                 System.out.println("========== Client disconnection " + super.getSocketClient().getInetAddress() + " deconnectee ==========");
                 System.out.println();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                System.out.println("Lors de la ferme de la socket client EMPRUNT");
             }
         }
     }
