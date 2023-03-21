@@ -1,6 +1,7 @@
 package services;
 
 import abonnee.Abonne;
+import consolColor.Color;
 import dataBase.Data;
 import document.RestrictionException;
 import server.Service;
@@ -66,9 +67,11 @@ public abstract class ServiveMediateque extends Service {
                 }
                 if (!this.customerResponse.equals("quit")) {
                     super.println("ok");
-                    System.out.println(
+                    System.out.println( Color.BLUE_BOLD +
                             "Request of " + super.getSocketClient().getInetAddress()
-                                    + " for DVD (num: " + this.chosenDocument.numero() + ")");
+                                    + " for DVD (num: " + this.chosenDocument.numero() + ")"
+                                    + Color.RESET
+                    );
 
                     theSpecificService();
 

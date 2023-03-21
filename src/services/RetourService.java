@@ -1,5 +1,7 @@
 package services;
 
+import consolColor.Color;
+
 import java.io.IOException;
 import java.net.Socket;
 
@@ -23,8 +25,10 @@ public class RetourService extends ServiveMediateque {
     protected void theSpecificService() {
         super.retourDocument();
         String reponse = "Return of the DVD (" + super.getNumDocument() + ") successful";
-        System.out.println(reponse);
-        super.println(reponse + "##You can leave by entering 'quit'##");
+        System.out.println(Color.BLUE_BOLD + reponse  + Color.RESET);
+        super.println(Color.BLUE_BOLD + reponse
+                + Color.YELLOW_BOLD + "##You can leave by entering 'quit'##" + Color.RESET
+        );
     }
 
     @Override

@@ -1,5 +1,6 @@
 package services;
 
+import consolColor.Color;
 import dataBase.Data;
 import document.*;
 import abonnee.*;
@@ -31,15 +32,20 @@ public class EmpruntService extends ServiveMediateque {
         try {
             super.emprunterDocument();
 
-            System.out.println("Borrowing DVD (num: " + super.getNumDocument() + ") confirmed");
-            super.println("Borrowing DVD (num: " + super.getNumDocument() + ") confirms.##" +
-                    "You can leave by entering 'quit'.##");
-        } catch (RestrictionException e) {
-            System.out.println(e.toString()
-                    .replace("##", "\n")
-                    .replace("You", super.getCurrentAbonneName())
+            System.out.println(Color.BLUE_BOLD + "Borrowing DVD (num: " + super.getNumDocument() + ") confirmed"
+                    + Color.RESET
             );
-            super.println(e.toString());
+            super.println(Color.BLUE_BOLD + "Borrowing DVD (num: " + super.getNumDocument() + ") confirms.##"
+                    + Color.YELLOW_BOLD +
+                    "You can leave by entering 'quit'.##"
+                    + Color.RESET
+            );
+        } catch (RestrictionException e) {
+            System.out.println(Color.RED_BOLD + (e.toString()
+                    .replace("##", "\n")
+                    .replace("You", super.getCurrentAbonneName()) + Color.RESET)
+            );
+            super.println(Color.RED_BOLD + e + Color.RESET);
         }
     }
 

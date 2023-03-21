@@ -1,6 +1,7 @@
 package services;
 
 import abonnee.Abonne;
+import consolColor.Color;
 import dataBase.Data;
 import document.*;
 
@@ -33,15 +34,17 @@ public class ReservationService extends ServiveMediateque {
     protected void theSpecificService() {
         try {
             super.reserverDocument();
-            super.println("Reservation of the DVD confirmed, you have 2 hours to come and pick it up. ##" +
-                    "Otherwise, we will be forced to cancel it.##You can leave by entering 'quit'.##");
-            System.out.println("Booking DVD (num: " + super.getNumDocument() + ") confirmed");
-        } catch (RestrictionException e) {
-            System.out.println(e.toString()
-                    .replace("##", "\n")
-                    .replace("You", super.getCurrentAbonneName())
+            super.println(Color.BLUE_BOLD + "Reservation of the DVD confirmed, you have 2 hours to come and pick it up. ##"
+                    + Color.YELLOW_BOLD + "Otherwise, we will be forced to cancel it.##You can leave by entering 'quit'.##"
+                    + Color.RESET
             );
-            super.println(e.toString());
+            System.out.println( Color.BLUE_BOLD +"Booking DVD (num: " + super.getNumDocument() + ") confirmed" + Color.RESET );
+        } catch (RestrictionException e) {
+            System.out.println( Color.RED_BOLD + (e.toString()
+                    .replace("##", "\n")
+                    .replace("You", super.getCurrentAbonneName()) + Color.RESET)
+            );
+            super.println( Color.RED_BOLD + e + Color.RESET);
         }
     }
 
