@@ -1,6 +1,7 @@
 package document;
 
 import abonnee.Abonne;
+import services.Document;
 
 import java.util.Timer;
 import java.util.TimerTask;

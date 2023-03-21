@@ -1,6 +1,7 @@
 package document;
 
 import abonnee.Abonne;
+import services.Document;
 
 public class ConcurrentDocument implements Document {
     private final Document d;
