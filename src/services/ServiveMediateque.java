@@ -67,10 +67,16 @@ public abstract class ServiveMediateque extends Service {
                 }
                 if (!this.customerResponse.equals("quit")) {
                     super.println("ok");
+
+                    String abonneInfo = "";
+                    if (this.currentAbonne != null){
+                        abonneInfo = " (customer name: "+ this.currentAbonne+" num: " + currentAbonne.getNumAbonee() + ")";
+                    }
+
                     System.out.println( Color.BLUE_BOLD +
-                            "Request of " + super.getSocketClient().getInetAddress()
-                                    + " for DVD (num: " + this.chosenDocument.numero() + ")"
-                                    + Color.RESET
+                            "Request of " + super.getSocketClient().getInetAddress() + abonneInfo
+                            + " for DVD (num: " + this.chosenDocument.numero() + ")"
+                            + Color.RESET
                     );
 
                     theSpecificService();

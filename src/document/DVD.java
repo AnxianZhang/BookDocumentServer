@@ -49,7 +49,7 @@ public class DVD implements Document {
         this.titre = titre;
         this.abonne = abonne;
 
-        this.timer = new Timer();
+        this.timer = null;
     }
 
     @Override
@@ -77,6 +77,7 @@ public class DVD implements Document {
             this.estReserve = true;
             this.estRetourne = true;
 
+            this.timer = new Timer();
             this.timer.schedule(new ReservationInvalide(this, ab), VALID_TIME);
             return;
         }

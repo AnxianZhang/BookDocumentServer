@@ -11,7 +11,7 @@ CREATE SEQUENCE aboneeSeq;
 CREATE TABLE Abonee(
    numAbonee INT,
    anneeNaissance INT NOT NULL,
-   nom VARCHAR(60) NOT NULL,
+   nom VARCHAR(30) NOT NULL,
    PRIMARY KEY(numAbonee)
 );
 
@@ -19,7 +19,7 @@ CREATE TABLE DVD(
    numDoc INT PRIMARY KEY,
    estEmprunte VARCHAR(1) NOT NULL,
    estRetourne VARCHAR(1) NOT NULL,
-   titre VARCHAR(130) NOT NULL,
+   titre VARCHAR(30) NOT NULL,
    numAbonee INT REFERENCES Abonee(numAbonee),
    estAdulte VARCHAR(1) NOT NULL
 );
@@ -50,5 +50,3 @@ insert into DVD values (docSeq.nextval, 'N', 'Y', 'xianHe', null , 'N');
 insert into DVD values (docSeq.nextval, 'N', 'Y', 'Yes Smile ', null , 'Y');
 insert into DVD values (docSeq.nextval, 'N', 'Y', 'Mou pi pi', null , 'N');
 insert into DVD values (docSeq.nextval, 'N', 'Y', 'Gu Gu', null , 'Y');
-
--- SELECT TNAME FROM tab WHERE tname NOT LIKE '%$%' AND tname NOT LIKE '%log%';
