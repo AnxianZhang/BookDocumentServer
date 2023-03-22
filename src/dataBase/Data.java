@@ -3,7 +3,7 @@ package dataBase;
 import abonnee.Abonne;
 import document.ConcurrentDocument;
 import document.DVD;
-import document.Document;
+import services.Document;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

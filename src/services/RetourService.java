@@ -1,77 +1,93 @@
 package services;
 
-import dataBase.Data;
-import document.Document;
-import server.Service;
+import consolColor.Color;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Objects;
 
-public class RetourService extends Service {
-    private static Data data;
+public class RetourService extends ServiveMediateque {
+//    private static Data data;
 
-    public RetourService(Socket socketServer) {
+    public RetourService(Socket socketServer) throws IOException {
         super(socketServer);
     }
 
-    public static void setData(Data d) {
-        data = d;
+//    public static void setData(Data d) {
+//        data = d;
+//    } // ok
+
+    @Override
+    protected String welcomeMsg(){
+        return "++++++++++ Welcome to the return service ++++++++++";
+    }
+
+    @Override
+    protected void theSpecificService() {
+        super.retourDocument();
+        String reponse = "Return of the DVD (" + super.getNumDocument() + ") successful";
+        System.out.println(Color.BLUE_BOLD + reponse  + Color.RESET);
+        super.println(Color.BLUE_BOLD + reponse
+                + Color.YELLOW_BOLD + "##You can leave by entering 'quit'##" + Color.RESET
+        );
+    }
+
+    @Override
+    protected String serviceName() {
+        return "return";
     }
 
     @Override
     public void run() {
-        System.out.println("========== Client connection " + super.getSocketClient().getInetAddress() + " ==========");
+//        System.out.println("========== Client connection " + super.getSocketClient().getInetAddress() + " ==========");
 
-        String reponse = "";
-        Document chosenDocument = null;
+//        String reponse = "";
+//        Document chosenDocument = null;
 
-        Socket client = super.getSocketClient();
-        BufferedReader in = null;
-        PrintWriter out = null;
+//        Socket client = super.getSocketClient();
+//        BufferedReader in = null;
+//        PrintWriter out = null;
+//            super.println("++++++++++ Welcome to the return service ++++++++++");
+//            String customerResponse = "";
 
         try {
-            in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-            out = new PrintWriter(client.getOutputStream(), true);
+            super.welcomeInfo();
+            super.requestDocument();
+//            in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+//            out = new PrintWriter(client.getOutputStream(), true);
 
-            out.println("++++++++++ Welcome to the return service ++++++++++");
-            String customerResponse = "";
 
-            while (true) {
-                while (chosenDocument == null) {
-                    out.println("Please enter a (valid) number of DVD that you wish to return: ");
-
-                    customerResponse = in.readLine();
-                    if (Objects.equals(customerResponse, "quit")) {
-//                    System.out.println(customerResponse);
-                        break;
-                    }
-                    int numDVD = Integer.parseInt(customerResponse);
-                    chosenDocument = data.getDocument(numDVD);
-                }
-
-                if (!customerResponse.equals("quit")) {
-                    out.println("ok");
-                    System.out.println("Request of " + client.getInetAddress()
-                            + " for DVD (num: " + chosenDocument.numero() + ")"
-                    );
-
-                    chosenDocument.retour();
-                    reponse = "Return of the DVD (" + chosenDocument.numero() + ") successful";
-                    System.out.println(reponse);
-                    out.println(reponse + "##You can leave by entering 'quit'##");
-
-                    customerResponse = "";
-                    chosenDocument = null;
-                }
-                else {
-                    break;
-                }
-
-            }
+//            while (true) {
+//                while (chosenDocument == null) {
+//                    super.println("Please enter a (valid) number of DVD that you wish to return: ");
+//
+//                    customerResponse = super.readLine();
+//                    if (Objects.equals(customerResponse, "quit")) {
+////                    System.out.println(customerResponse);
+//                        break;
+//                    }
+//                    int numDVD = Integer.parseInt(customerResponse);
+//                    chosenDocument = data.getDocument(numDVD);
+//                }
+//
+//                if (!customerResponse.equals("quit")) {
+//                    super.println("ok");
+//                    System.out.println("Request of " + client.getInetAddress()
+//                            + " for DVD (num: " + chosenDocument.numero() + ")"
+//                    );
+//
+//                    chosenDocument.retour();
+//                    reponse = "Return of the DVD (" + chosenDocument.numero() + ") successful";
+//                    System.out.println(reponse);
+//                    super.println(reponse + "##You can leave by entering 'quit'##");
+//
+//                    customerResponse = "";
+//                    chosenDocument = null;
+//                }
+//                else {
+//                    break;
+//                }
+//
+//            }
 //            while (chosenDocument == null) {
 //                out.println("Please enter a (valid) number of DVD that you wish to borrow: ");
 //                int numDVD = Integer.parseInt(in.readLine());
@@ -84,13 +100,7 @@ public class RetourService extends Service {
         } catch (IOException e) {
             System.out.println("pb service");
         } finally {
-            try {
-                client.close();
-                System.out.println("========== Client disconnection " + super.getSocketClient().getInetAddress() + " deconnectee ==========");
-                System.out.println();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            super.closeSocketClient();
         }
     }
 }

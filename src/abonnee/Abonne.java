@@ -1,9 +1,6 @@
 package abonnee;
 
-import document.Document;
-
 import java.time.Year;
-import java.util.List;
 
 public class Abonne {
     private int numAbonee;
