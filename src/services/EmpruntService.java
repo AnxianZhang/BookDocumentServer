@@ -6,7 +6,7 @@ import document.*;
 import java.io.*;
 import java.net.Socket;
 
-public class EmpruntService extends ServiveMediateque {
+public class EmpruntService extends ServiveMediatheque {
     public EmpruntService(Socket socketServer) throws IOException {
         super(socketServer);
     }
@@ -49,7 +49,7 @@ public class EmpruntService extends ServiveMediateque {
             super.searchAbonne();
             super.requestDocument();
         } catch (IOException e) {
-            System.out.println("pb service");
+            super.timeOutMsg();
         } finally {
             super.closeSocketClient();
         }

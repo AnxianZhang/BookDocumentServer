@@ -5,7 +5,7 @@ import consolColor.Color;
 import java.io.IOException;
 import java.net.Socket;
 
-public class RetourService extends ServiveMediateque {
+public class RetourService extends ServiveMediatheque {
     public RetourService(Socket socketServer) throws IOException {
         super(socketServer);
     }
@@ -36,7 +36,7 @@ public class RetourService extends ServiveMediateque {
             super.welcomeInfo();
             super.requestDocument();
         } catch (IOException e) {
-            System.out.println("pb service");
+            super.timeOutMsg();
         } finally {
             super.closeSocketClient();
         }

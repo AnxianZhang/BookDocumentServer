@@ -10,13 +10,13 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.Objects;
 
-public abstract class ServiveMediateque extends Service {
+public abstract class ServiveMediatheque extends Service {
     private static Data data;
     private Document chosenDocument;
     private Abonne currentAbonne;
     private String customerResponse;
 
-    public ServiveMediateque(Socket socketClient) throws IOException {
+    public ServiveMediatheque(Socket socketClient) throws IOException {
         super(socketClient);
         this.chosenDocument = null;
         this.currentAbonne = null;
@@ -42,7 +42,7 @@ public abstract class ServiveMediateque extends Service {
         while (this.currentAbonne == null) {
             super.println("Please enter your customer number (a valid one): ||");
 
-            this.customerResponse = super.readLine();
+            this.customerResponse = ReceptionAvecTimeOut.recevoir(super.getSockIn(), super.getSocketClient());
             if (Objects.equals(this.customerResponse, "quit")) {
                 break;
             }
@@ -57,7 +57,7 @@ public abstract class ServiveMediateque extends Service {
                 while (chosenDocument == null) {
                     super.println("Please enter a (valid) number of DVD that you wish to "+ serviceName() +": ");
 
-                    this.customerResponse = super.readLine();
+                    this.customerResponse = ReceptionAvecTimeOut.recevoir(super.getSockIn(), super.getSocketClient()); // time
                     if (Objects.equals(this.customerResponse, "quit")) {
 //                    System.out.println(customerResponse);
                         break;
@@ -90,6 +90,10 @@ public abstract class ServiveMediateque extends Service {
                 break;
             }
         }
+    }
+
+    protected void timeOutMsg (){
+        System.out.println(Color.RED_BOLD + "Time out of: " + super.getSocketClient().getInetAddress() + Color.RESET);
     }
 
     protected void closeSocketClient(){
