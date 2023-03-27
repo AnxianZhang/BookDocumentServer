@@ -1,7 +1,8 @@
 package document;
 
 import abonnee.Abonne;
-import services.Document;
+import database.Document;
+import database.RestrictionException;
 
 public class ConcurrentDocument implements Document {
     private final Document d;

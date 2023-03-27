@@ -1,48 +1,54 @@
-package dataBase;
+package database;
 
 import abonnee.Abonne;
 import document.ConcurrentDocument;
 import document.DVD;
-import services.Document;
 
-import java.lang.reflect.Type;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class Data {
-    private ArrayList<Document> documents;
-    private ArrayList<Abonne> abonees;
+    private final ArrayList<Document> documents;
+    private final ArrayList<Abonne> abonees;
 
-    public Data(){
+    public Data() {
         this.documents = new ArrayList<>();
         this.abonees = new ArrayList<>();
         try {
             initData();
-        }catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     private void initData() throws SQLException {
-        DatabaseConnection.makeConnexion();
+        Statement dvdStatement = null;
+        Statement aboneesStatement = null;
+        try {
+            DatabaseConnection.makeConnexion();
 
-        // un statement par requete !!!
-        Statement DVDStatement = DatabaseConnection.getConnexion().createStatement();
-        Statement aboneesStatement = DatabaseConnection.getConnexion().createStatement();
+            // un statement par requete !!!
+            dvdStatement = DatabaseConnection.getConnexion().createStatement();
+            aboneesStatement = DatabaseConnection.getConnexion().createStatement();
 
-        String DVDsRequest = "SELECT * FROM DVD";
-        String aboneeRequest = "SELECT * FROM Abonee";
+            String dvdsRequest = "SELECT * FROM DVD";
+            String aboneeRequest = "SELECT * FROM Abonee";
 
-        ResultSet DVDs = DVDStatement.executeQuery(DVDsRequest);
-        ResultSet abonees = aboneesStatement.executeQuery(aboneeRequest);
+            ResultSet dvds = dvdStatement.executeQuery(dvdsRequest);
+            ResultSet aboneesDB = aboneesStatement.executeQuery(aboneeRequest);
 
-        addAllAbonee(abonees);
-        addAllDocuments(DVDs);
-
-        aboneesStatement.close();
-        DVDStatement.close();
-        DatabaseConnection.close();
+            addAllAbonee(aboneesDB);
+            addAllDocuments(dvds);
+        } catch (SQLException e) {
+            System.out.println("Problem when initData in Data");
+        } finally {
+            if (dvdStatement != null)
+                dvdStatement.close();
+            if (aboneesStatement != null)
+                aboneesStatement.close();
+            DatabaseConnection.close();
+        }
     }
 
     private void addAllAbonee(ResultSet aboneesData) throws SQLException {
@@ -82,11 +88,12 @@ public class Data {
         return !val.equals("N");
     }
 
-    public void saveData() {
+    public void saveData() throws SQLException {
+        PreparedStatement updateStatement = null;
         try {
             DatabaseConnection.makeConnexion();
             DatabaseConnection.getConnexion().setAutoCommit(false);
-            PreparedStatement updateStatement = DatabaseConnection.getConnexion().prepareStatement(
+            updateStatement = DatabaseConnection.getConnexion().prepareStatement(
                     "UPDATE DVD SET estEmprunte = ?, estRetourne = ?, numAbonee = ? WHERE numDoc = ?"
             );
             for (Document d : this.documents) {
@@ -96,8 +103,7 @@ public class Data {
                 updateStatement.setString(2, a == null ? "Y" : "N");
                 if (a == null) {
                     updateStatement.setNull(3, Types.INTEGER);
-                }
-                else {
+                } else {
                     updateStatement.setInt(3, a.getNumAbonee());
                 }
                 updateStatement.setInt(4, d.numero());
@@ -105,7 +111,6 @@ public class Data {
             }
 
             DatabaseConnection.getConnexion().commit();
-            updateStatement.close();
             DatabaseConnection.close();
         } catch (Exception e) {
             try {
@@ -114,7 +119,9 @@ public class Data {
                 System.out.println("rollback success");
             }
             System.out.println("Problem occurred in data update");
-//            e.printStackTrace();
+        } finally {
+            if (updateStatement != null)
+                updateStatement.close();
         }
     }
 

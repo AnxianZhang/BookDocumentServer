@@ -1,12 +1,7 @@
-package document;
-
-import consolColor.Color;
-
-import javax.swing.*;
-import java.awt.*;
+package database;
 
 public class RestrictionException extends Exception {
-    private String errorMsg;
+    private final String errorMsg;
 
     public RestrictionException(String msg) {
         this.errorMsg = msg;

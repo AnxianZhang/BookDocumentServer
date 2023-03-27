@@ -3,9 +3,9 @@ package abonnee;
 import java.time.Year;
 
 public class Abonne {
-    private int numAbonee;
-    private int anneeNaissance;
-    private String nom;
+    private final int numAbonee;
+    private final int anneeNaissance;
+    private final String nom;
 
     public Abonne(int numAbonee, int anneeNaissance, String nom) {
         this.numAbonee = numAbonee;

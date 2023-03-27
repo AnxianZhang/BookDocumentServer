@@ -2,21 +2,22 @@ package services;
 
 import abonnee.Abonne;
 import consolColor.Color;
-import dataBase.Data;
-import document.RestrictionException;
+import database.Data;
+import database.Document;
+import database.RestrictionException;
 import server.Service;
 
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Objects;
 
-public abstract class ServiveMediatheque extends Service {
+public abstract class ServiceMediatheque extends Service {
     private static Data data;
     private Document chosenDocument;
     private Abonne currentAbonne;
     private String customerResponse;
 
-    public ServiveMediatheque(Socket socketClient) throws IOException {
+    protected ServiceMediatheque(Socket socketClient) throws IOException {
         super(socketClient);
         this.chosenDocument = null;
         this.currentAbonne = null;
@@ -28,7 +29,9 @@ public abstract class ServiveMediatheque extends Service {
     }
 
     protected abstract String welcomeMsg();
+
     protected abstract void theSpecificService();
+
     protected abstract String serviceName();
 
     protected void welcomeInfo() {
@@ -42,7 +45,7 @@ public abstract class ServiveMediatheque extends Service {
         while (this.currentAbonne == null) {
             super.println("Please enter your customer number (a valid one): ||");
 
-            this.customerResponse = ReceptionAvecTimeOut.recevoir(super.getSockIn(), super.getSocketClient());
+            this.customerResponse = ReceptionTimeOut.recevoir(super.getSockIn(), super.getSocketClient());
             if (Objects.equals(this.customerResponse, "quit")) {
                 break;
             }
@@ -51,40 +54,42 @@ public abstract class ServiveMediatheque extends Service {
         }
     }
 
+    private void handlingResponse() {
+        super.println("ok");
+
+        String abonneInfo = "";
+        if (this.currentAbonne != null) {
+            abonneInfo = " (customer name: " + this.currentAbonne.getNom() + " num: " + currentAbonne.getNumAbonee() + ")";
+        }
+
+        System.out.println(Color.BLUE_BOLD +
+                "Request of " + super.getSocketClient().getInetAddress() + abonneInfo
+                + " for DVD (num: " + this.chosenDocument.numero() + ")"
+                + Color.RESET
+        );
+
+        theSpecificService();
+
+        // init for next request
+        this.customerResponse = "";
+        this.chosenDocument = null;
+    }
+
     protected void requestDocument() throws IOException {
         while (true) {
             if (!this.customerResponse.equals("quit")) {
                 while (chosenDocument == null) {
-                    super.println("Please enter a (valid) number of DVD that you wish to "+ serviceName() +": ");
+                    super.println("Please enter a (valid) number of DVD that you wish to " + serviceName() + ": ");
 
-                    this.customerResponse = ReceptionAvecTimeOut.recevoir(super.getSockIn(), super.getSocketClient()); // time
+                    this.customerResponse = ReceptionTimeOut.recevoir(super.getSockIn(), super.getSocketClient()); // time
                     if (Objects.equals(this.customerResponse, "quit")) {
-//                    System.out.println(customerResponse);
                         break;
                     }
                     int numDVD = Integer.parseInt(this.customerResponse);
                     this.chosenDocument = data.getDocument(numDVD);
                 }
                 if (!this.customerResponse.equals("quit")) {
-                    super.println("ok");
-
-                    String abonneInfo = "";
-                    if (this.currentAbonne != null){
-                        abonneInfo = " (customer name: "+ this.currentAbonne+" num: " + currentAbonne.getNumAbonee() + ")";
-                    }
-
-                    System.out.println( Color.BLUE_BOLD +
-                            "Request of " + super.getSocketClient().getInetAddress() + abonneInfo
-                            + " for DVD (num: " + this.chosenDocument.numero() + ")"
-                            + Color.RESET
-                    );
-
-                    theSpecificService();
-
-                    // init for next request
-                    this.customerResponse = "";
-                    this.chosenDocument = null;
-//                        currentAbonne = null;
+                    handlingResponse();
                 }
             } else {
                 break;
@@ -92,25 +97,25 @@ public abstract class ServiveMediatheque extends Service {
         }
     }
 
-    protected void timeOutMsg (){
+    protected void timeOutMsg() {
         System.out.println(Color.RED_BOLD + "Time out of: " + super.getSocketClient().getInetAddress() + Color.RESET);
     }
 
-    protected void closeSocketClient(){
+    protected void closeSocketClient() {
         try {
             super.getSocketClient().close();
             System.out.println("========== Client disconnection " + super.getSocketClient().getInetAddress() + " deconnectee ==========");
             System.out.println();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println("Problem when closing socket in ServiceMediatheque");;
         }
     }
 
-    protected int getNumDocument(){
+    protected int getNumDocument() {
         return this.chosenDocument.numero();
     }
 
-    protected String getCurrentAbonneName(){
+    protected String getCurrentAbonneName() {
         return this.currentAbonne.getNom();
     }
 
@@ -122,7 +127,7 @@ public abstract class ServiveMediatheque extends Service {
         this.chosenDocument.reservationPour(this.currentAbonne);
     }
 
-    protected void retourDocument(){
+    protected void retourDocument() {
         this.chosenDocument.retour();
     }
 }

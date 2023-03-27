@@ -1,12 +1,12 @@
 package services;
 
 import consolColor.Color;
-import document.*;
+import database.RestrictionException;
 
 import java.io.*;
 import java.net.Socket;
 
-public class EmpruntService extends ServiveMediatheque {
+public class EmpruntService extends ServiceMediatheque {
     public EmpruntService(Socket socketServer) throws IOException {
         super(socketServer);
     }
