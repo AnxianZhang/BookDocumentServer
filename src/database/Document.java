@@ -1,8 +1,7 @@
-package services;
+package database;
 
 
 import abonnee.Abonne;
-import document.RestrictionException;
 
 public interface Document {
     int numero();

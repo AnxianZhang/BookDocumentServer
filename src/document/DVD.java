@@ -1,29 +1,34 @@
 package document;
 
 import abonnee.Abonne;
-import services.Document;
+import database.Document;
+import database.RestrictionException;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class DVD implements Document {
-    private int numDoc;
-    private boolean estAdulte;
+    private final int numDoc;
+    private final boolean estAdulte;
 
     private boolean estReserve;
     private boolean estEmprunte;
     private boolean estRetourne;
-    private String titre;
+    private final String titre;
     private Abonne abonne;
-    private Timer timer;
+    private static final Timer timer;
+    private ReservationInvalide myTimerTask;
 
-    //    private static final long VALID_TIME = 1000L * 60 * 60 * 2;//2h->ms
-    private static final long VALID_TIME = 15000L;//2h->ms
+    private static final long VALID_TIME;
 
+    static {
+        timer = new Timer();
+        VALID_TIME = 1000L * 60 * 60 * 2;//2h->ms
+    }
 
-    private class ReservationInvalide extends TimerTask {
-        private Document dvd;
-        private Abonne abonne;
+    private static class ReservationInvalide extends TimerTask {
+        private final Document dvd;
+        private final Abonne abonne;
 
         public ReservationInvalide(Document d, Abonne a) {
             this.dvd = d;
@@ -48,8 +53,11 @@ public class DVD implements Document {
         this.estReserve = false;
         this.titre = titre;
         this.abonne = abonne;
+        this.myTimerTask = null;
+    }
 
-        this.timer = new Timer();
+    public static void closeTimers() {
+        timer.cancel();
     }
 
     @Override
@@ -77,7 +85,8 @@ public class DVD implements Document {
             this.estReserve = true;
             this.estRetourne = true;
 
-            this.timer.schedule(new ReservationInvalide(this, ab), VALID_TIME);
+            this.myTimerTask = new ReservationInvalide(this, ab);
+            timer.schedule(this.myTimerTask, VALID_TIME);
             return;
         }
         throw new RestrictionException(
@@ -96,7 +105,7 @@ public class DVD implements Document {
 
             if (this.estReserve) {
                 if (this.reserveur() == ab) {
-                    this.timer.cancel();
+                    this.myTimerTask.cancel();
                 } else {
                     throw new RestrictionException("The DVD " + this.titre + " is already booked, impossible to borrow. ##");
                 }
