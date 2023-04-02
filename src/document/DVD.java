@@ -4,6 +4,8 @@ import abonnee.Abonne;
 import database.Document;
 import database.RestrictionException;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -18,6 +20,9 @@ public class DVD implements Document {
     private Abonne abonne;
     private static final Timer timer;
     private ReservationInvalide myTimerTask;
+
+    private int bookHour;
+    private int bookMinutes;
 
     private static final long VALID_TIME;
 
@@ -54,6 +59,8 @@ public class DVD implements Document {
         this.titre = titre;
         this.abonne = abonne;
         this.myTimerTask = null;
+        this.bookHour = 0;
+        this.bookMinutes = 0;
     }
 
     public static void closeTimers() {
@@ -87,13 +94,22 @@ public class DVD implements Document {
 
             this.myTimerTask = new ReservationInvalide(this, ab);
             timer.schedule(this.myTimerTask, VALID_TIME);
+            initCurrentTimeForBook();
             return;
         }
         throw new RestrictionException(
                 "The DVD " + this.titre + " is already "
-                        + (this.estReserve ? "reserved" : "borrowed")
+                        + (this.estReserve ? "booked until " + this.bookHour + ":" + this.bookMinutes : "borrowed")
                         + ", impossible to reserve. ##"
         );
+    }
+
+    private void initCurrentTimeForBook(){
+        if (this.bookMinutes == 0 && this.bookHour == 0){
+            LocalTime currentTime = LocalTime.now();
+            this.bookHour = currentTime.getHour() + 2;
+            this.bookMinutes = currentTime.getMinute();
+        }
     }
 
     @Override
@@ -107,7 +123,7 @@ public class DVD implements Document {
                 if (this.reserveur() == ab) {
                     this.myTimerTask.cancel();
                 } else {
-                    throw new RestrictionException("The DVD " + this.titre + " is already booked, impossible to borrow. ##");
+                    throw new RestrictionException("The DVD " + this.titre + " is already booked until " + this.bookHour + ":" + this.bookMinutes+", impossible to borrow. ##");
                 }
             }
 
@@ -115,6 +131,8 @@ public class DVD implements Document {
             this.estEmprunte = true;
             this.estRetourne = false;
             this.estReserve = false;
+            this.bookHour = 0;
+            this.bookMinutes = 0;
             return;
         }
         throw new RestrictionException("The DVD " + this.titre + " is already borrowed, impossible to borrow. ##");
@@ -125,6 +143,8 @@ public class DVD implements Document {
         this.estReserve = false;
         this.estEmprunte = false;
         this.estRetourne = true;
+        this.bookHour = 0;
+        this.bookMinutes = 0;
         this.abonne = null;
     }
 }
